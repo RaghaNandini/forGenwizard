@@ -1,33 +1,47 @@
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import hashlib
 
-# Create FastAPI app
-app = FastAPI(
-    title="Token Generator API",
-    description="API to generate SHA256 checksum from input text",
-    version="1.0.0"
-)
+app = FastAPI()
 
-# Function to generate SHA256 token
 def generate(text):
     return hashlib.sha256(text.encode()).hexdigest()
 
-# Pydantic model for request body
 class TextInput(BaseModel):
     text: str
 
-# Welcome endpoint
-@app.get("/", summary="Welcome API")
-def welcome():
-    return {"message": "Welcome to Token Generator API - Created by RaghaNandini"}
 
-# Endpoint to generate checksum
-@app.post(
-    "/generate",
-    summary="Generate Token",
-    description="Generates SHA256 checksum for the provided text input"
-)
+@app.get("/", response_class=HTMLResponse)
+def welcome():
+    return """
+    <html>
+    <head>
+        <title>Welcome</title>
+        <style>
+            body {
+                font-family: Arial;
+                background-color: #111;
+                color: white;
+                text-align: center;
+                padding-top: 100px;
+            }
+            h1 { color: #00ffcc; }
+            p { font-size:18px; }
+        </style>
+    </head>
+
+    <body>
+        <h1>Welcome to the webpage, Baina Ragha Nandini!</h1>
+        <p>"The only way to do great work is to love what you do." – Steve Jobs</p>
+        <h2>Containerized Python API</h2>
+        <p>This API generates SHA256 tokens using FastAPI</p>
+    </body>
+    </html>
+    """
+
+
+@app.post("/generate")
 def generate_token(data: TextInput):
     text = data.text
     token = generate(text)
